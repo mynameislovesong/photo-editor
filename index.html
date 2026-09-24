@@ -10,7 +10,7 @@
 <div class="app">
   <header>
     <div class="logo">Tiny Photo Editor</div>
-    <div class="sub">누끼 · 글씨 추출 · 브러시 · 여러 장 연속 편집</div>
+    <div class="sub">누끼 · 글씨 스티커 · 브러시 · 여러 장 연속 편집</div>
     <span class="pill">로컬 처리</span>
     <div class="grow"></div>
     <input id="fileInput" type="file" accept="image/*" multiple hidden>
@@ -23,7 +23,10 @@
   </aside>
 
   <main class="stage" id="stage">
-    <div class="canvas-wrap"><canvas id="canvas"></canvas></div>
+    <div class="canvas-wrap" id="canvasWrap">
+      <canvas id="canvas"></canvas>
+      <div id="selectionBox"></div>
+    </div>
     <div class="empty" id="empty">사진을 불러오거나<br>여기에 드래그해 놓기</div>
     <div id="drop"></div>
   </main>
@@ -40,11 +43,22 @@
     </div>
 
     <div class="section">
-      <h3>글씨 누끼</h3>
-      <div class="row"><label>글씨색</label><input id="textColor" type="color" value="#ffffff"><button id="sampleTextBtn">찍기</button></div>
+      <h3>글씨 → 스티커</h3>
+      <button id="selectTextAreaBtn" style="width:100%">① 글씨 영역 드래그 선택</button>
+      <div class="row"><label>글씨색</label><input id="textColor" type="color" value="#ffffff"><button id="sampleTextBtn">② 색 찍기</button></div>
       <div class="row"><label>민감도</label><input id="textTol" type="range" min="5" max="160" value="60"></div>
-      <button id="extractTextBtn" style="width:100%">선택 색만 남기기</button>
-      <div class="small">자막/로고처럼 색 대비가 분명한 글씨에 적합.</div>
+      <button id="saveStickerBtn" class="primary" style="width:100%">③ 내 스티커로 저장</button>
+      <div class="small">원본은 건드리지 않고 선택한 영역에서 글씨색만 투명 PNG처럼 따서 저장해요.</div>
+    </div>
+
+    <div class="section">
+      <h3>내 스티커 <span id="stickerCount" class="muted-count">0</span></h3>
+      <div id="stickers" class="sticker-grid"></div>
+      <div id="stickerEmpty" class="small">저장한 글씨 스티커가 여기에 쌓여요.</div>
+      <div class="row"><label>크기</label><input id="stickerSize" type="range" min="10" max="250" value="100"></div>
+      <div class="row"><label>불투명도</label><input id="stickerOpacity" type="range" min="10" max="100" value="100"></div>
+      <button id="stopStickerBtn" style="width:100%">스티커 찍기 종료</button>
+      <div class="small">스티커를 누른 뒤 사진 위를 클릭하면 찍혀요. 브라우저를 닫아도 저장됩니다.</div>
     </div>
 
     <div class="section">
