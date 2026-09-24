@@ -146,24 +146,83 @@ document.addEventListener('keydown',e=>{
   if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='z'){e.preventDefault();undo();}
 });
 
+if(openStickerFileBtn){
+  openStickerFileBtn.onclick=()=>{
+    stickerInput.value='';
+    stickerInput.click();
+  };
+}
+
+async function loadStickerFile(file){
+  if(!file) return;
+
+  if(stickerImportStatus){
+    stickerImportStatus.textContent='불러오는 중 · '+file.name;
+  }
+
+  try{
+    let drawable=null;
+    let width=0;
+    let height=0;
+    let objectUrl=null;
+
+    if(typeof createImageBitmap === 'function'){
+      try{
+        drawable=await createImageBitmap(file);
+        width=drawable.width;
+        height=drawable.height;
+      }catch(err){
+        drawable=null;
+      }
+    }
+
+    if(!drawable){
+      objectUrl=URL.createObjectURL(file);
+      drawable=await new Promise((resolve,reject)=>{
+        const img=new Image();
+        img.onload=()=>resolve(img);
+        img.onerror=()=>reject(new Error('이미지 디코딩 실패'));
+        img.src=objectUrl;
+      });
+      width=drawable.naturalWidth || drawable.width;
+      height=drawable.naturalHeight || drawable.height;
+    }
+
+    if(!width || !height){
+      throw new Error('이미지 크기를 읽지 못했습니다');
+    }
+
+    stickerSourceCanvas.width=width;
+    stickerSourceCanvas.height=height;
+    stickerSourceCtx.clearRect(0,0,width,height);
+    stickerSourceCtx.drawImage(drawable,0,0,width,height);
+
+    stickerSourceOriginal=stickerSourceCtx.getImageData(0,0,width,height);
+    stickerSourceEmpty.style.display='none';
+
+    if(drawable && typeof drawable.close === 'function'){
+      drawable.close();
+    }
+    if(objectUrl){
+      URL.revokeObjectURL(objectUrl);
+    }
+
+    if(stickerImportStatus){
+      stickerImportStatus.textContent='불러옴 · '+file.name+' · '+width+'×'+height;
+    }
+    setStatus('외부 스티커 이미지 불러옴');
+  }catch(err){
+    console.error('Sticker image load failed', err);
+    if(stickerImportStatus){
+      stickerImportStatus.textContent='불러오기 실패 · '+(err && err.message ? err.message : '지원하지 않는 이미지 형식');
+    }
+    setStatus('스티커 이미지 불러오기 실패');
+  }
+}
+
 stickerInput.addEventListener('change', e=>{
   const file=e.target.files && e.target.files[0];
-  if(!file) return;
-  const url=URL.createObjectURL(file);
-  const img=new Image();
-  img.onload=()=>{
-    stickerSourceCanvas.width=img.naturalWidth;
-    stickerSourceCanvas.height=img.naturalHeight;
-    stickerSourceCtx.clearRect(0,0,stickerSourceCanvas.width,stickerSourceCanvas.height);
-    stickerSourceCtx.drawImage(img,0,0);
-    stickerSourceOriginal=stickerSourceCtx.getImageData(0,0,stickerSourceCanvas.width,stickerSourceCanvas.height);
-    stickerSourceEmpty.style.display='none';
-    setStatus('외부 스티커 이미지 불러옴');
-    URL.revokeObjectURL(url);
-  };
-  img.onerror=()=>{ setStatus('이미지를 불러오지 못했어요'); URL.revokeObjectURL(url); };
-  img.src=url;
-  stickerInput.value='';
+  loadStickerFile(file);
 });
 
 document.getElementById('resetStickerSourceBtn').onclick=()=>{
