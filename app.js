@@ -144,8 +144,7 @@ document.addEventListener('keydown',e=>{
   if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='z'){e.preventDefault();undo();}
 });
 
-if(openStickerBtn && openStickerBtn.tagName === 'BUTTON') openStickerBtn.onclick=()=>stickerInput.click();
-stickerInput.onchange=e=>{
+stickerInput.addEventListener('change', e=>{
   const file=e.target.files && e.target.files[0];
   if(!file) return;
   const url=URL.createObjectURL(file);
@@ -160,9 +159,10 @@ stickerInput.onchange=e=>{
     setStatus('외부 스티커 이미지 불러옴');
     URL.revokeObjectURL(url);
   };
+  img.onerror=()=>{ setStatus('이미지를 불러오지 못했어요'); URL.revokeObjectURL(url); };
   img.src=url;
   stickerInput.value='';
-};
+});
 
 document.getElementById('resetStickerSourceBtn').onclick=()=>{
   if(!stickerSourceOriginal) return;
