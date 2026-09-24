@@ -230,3 +230,8 @@ input[type=range]{width:100%;accent-color:#75bfe9}
   .modal-actions,.modal-controls-grid,.segmented.two{grid-template-columns:1fr}
   .modal-footer{flex-direction:column;align-items:stretch}
 }
+
+.import-status{
+  margin-top:8px;padding:8px 10px;border:1px solid var(--line);border-radius:10px;
+  background:#f8fbfd;color:#7e8c9d;font-size:10px;line-height:1.45;
+}
