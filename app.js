@@ -23,6 +23,8 @@ const openStickerModalBtn = document.getElementById('openStickerModalBtn');
 const closeStickerModalBtn = document.getElementById('closeStickerModalBtn');
 const selectedStickerBar = document.getElementById('selectedStickerBar');
 const deleteStickerBtn = document.getElementById('deleteStickerBtn');
+const openStickerFileBtn = document.getElementById('openStickerFileBtn');
+const stickerImportStatus = document.getElementById('stickerImportStatus');
 
 let items = [];
 let index = -1;
