@@ -4,126 +4,155 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>Tiny Photo Editor</title>
-<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="style.css?v=4">
 </head>
 <body>
-<div class="app">
-  <header>
-    <div class="logo">Tiny Photo Editor</div>
-    <div class="sub">외부 이미지 누끼 · 스티커 · 브러시 · 여러 장 연속 편집</div>
-    <span class="pill">로컬 처리</span>
-    <div class="grow"></div>
-    <input id="fileInput" type="file" accept="image/*" multiple hidden>
-    <button id="openBtn" class="primary">사진 불러오기</button>
+<div class="app-shell">
+  <header class="topbar">
+    <div class="brand-wrap">
+      <div class="brand-mark">✦</div>
+      <div>
+        <div class="brand">Tiny Photo Editor</div>
+        <div class="subtitle">빠르게 따고, 저장하고, 계속 붙이기</div>
+      </div>
+    </div>
+    <div class="top-actions">
+      <span class="local-badge">● 로컬 처리</span>
+      <input id="fileInput" type="file" accept="image/*" multiple hidden>
+      <button id="openBtn" type="button" class="btn btn-primary">＋ 사진 불러오기</button>
+    </div>
   </header>
 
-  <aside class="left">
-    <div id="thumbs"></div>
-    <div class="small">사진 여러 장을 한 번에 넣을 수 있어요. 썸네일을 누르거나 ← → 키로 이동.</div>
+  <aside class="left-panel">
+    <div class="panel-title">작업 사진</div>
+    <div id="thumbs" class="thumb-list"></div>
+    <div class="panel-note">여러 장을 한 번에 넣고<br>← → 키로 빠르게 넘길 수 있어요.</div>
   </aside>
 
-  <main class="stage" id="stage">
-    <div class="canvas-wrap" id="canvasWrap">
+  <main class="workspace" id="stage">
+    <div class="canvas-wrap">
       <canvas id="canvas"></canvas>
-      <div id="selectionBox"></div>
     </div>
-    <div class="empty" id="empty">사진을 불러오거나<br>여기에 드래그해 놓기</div>
+    <div class="empty-state" id="empty">
+      <div class="empty-icon">＋</div>
+      <strong>사진을 불러와 주세요</strong>
+      <span>또는 이 영역에 드래그</span>
+    </div>
     <div id="drop"></div>
   </main>
 
-  <aside class="right">
-    <div class="section">
-      <h3>자동 누끼</h3>
-      <div class="toolgrid">
-        <button id="pickBgBtn">배경색 찍기</button>
-        <button id="removeBgBtn">배경 제거</button>
+  <aside class="right-panel">
+    <section class="tool-card">
+      <div class="card-head">
+        <div>
+          <div class="eyebrow">STICKER MAKER</div>
+          <h3>외부 이미지 누끼</h3>
+        </div>
+        <span class="step-badge">01</span>
       </div>
-      <div class="row"><label>민감도</label><input id="bgTol" type="range" min="5" max="120" value="38"></div>
-      <div class="small">단색/비슷한 배경에 강해요. 먼저 배경색을 한 번 찍은 뒤 제거.</div>
-    </div>
 
-
-    <div class="section">
-      <h3>외부 이미지 → 스티커</h3>
       <input id="stickerInput" type="file" accept="image/*" hidden>
-      <div class="toolgrid">
-        <button id="openStickerBtn">외부 이미지 불러오기</button>
-        <button id="resetStickerSourceBtn">원본 복원</button>
+      <div class="source-actions">
+        <label id="openStickerBtn" for="stickerInput" class="btn btn-primary file-label">＋ 외부 이미지 불러오기</label>
+        <button id="resetStickerSourceBtn" type="button" class="btn btn-ghost">원본 복원</button>
       </div>
 
       <div class="sticker-source-preview">
         <canvas id="stickerSourceCanvas"></canvas>
-        <div id="stickerSourceEmpty" class="small">스티커로 만들 이미지를 따로 불러오세요.</div>
+        <div id="stickerSourceEmpty" class="source-empty">
+          <span>이미지를 불러오면</span>
+          <strong>여기서 바로 누끼를 딸 수 있어요</strong>
+        </div>
       </div>
 
-      <div class="row">
-        <label>선택 색</label>
+      <div class="control-row">
+        <div class="control-label">선택 색</div>
         <input id="stickerColor" type="color" value="#ffffff">
-        <button id="pickStickerColorBtn">색 찍기</button>
-      </div>
-      <div class="row"><label>민감도</label><input id="stickerTol" type="range" min="5" max="180" value="60"></div>
-      <div class="toolgrid">
-        <button id="keepStickerColorBtn">선택 색만 남기기</button>
-        <button id="removeStickerColorBtn">선택 색 지우기</button>
+        <button id="pickStickerColorBtn" type="button" class="btn btn-compact">스포이드</button>
       </div>
 
-      <div class="sticker-options">
-        <label><input id="stickerOutline" type="checkbox"> 흰 테두리</label>
-        <label><input id="stickerShadow" type="checkbox"> 그림자</label>
+      <div class="control-block">
+        <div class="control-top"><span>색상 범위</span><span class="range-hint">좁게 ↔ 넓게</span></div>
+        <input id="stickerTol" type="range" min="5" max="180" value="60">
       </div>
 
-      <button id="saveStickerBtn" class="primary" style="width:100%;margin-top:10px">내 스티커로 저장</button>
-      <div class="small">메인 사진과 별개의 이미지를 불러와 특정 색만 남기거나 지운 뒤 스티커로 저장합니다.</div>
-    </div>
+      <div class="segmented two">
+        <button id="keepStickerColorBtn" type="button">선택 색만 남기기</button>
+        <button id="removeStickerColorBtn" type="button">선택 색 지우기</button>
+      </div>
 
-    <div class="section">
-      <h3>내 스티커 <span id="stickerCount" class="muted-count">0</span></h3>
+      <div class="option-row">
+        <label class="check-chip"><input id="stickerOutline" type="checkbox"><span>흰 테두리</span></label>
+        <label class="check-chip"><input id="stickerShadow" type="checkbox"><span>그림자</span></label>
+      </div>
+
+      <button id="saveStickerBtn" type="button" class="btn btn-primary btn-wide">내 스티커로 저장</button>
+      <p class="helper">외부 이미지는 메인 사진과 별개로 처리돼요. 원하는 색을 클릭해 바로 누끼를 만들 수 있습니다.</p>
+    </section>
+
+    <section class="tool-card">
+      <div class="card-head">
+        <div>
+          <div class="eyebrow">MY STICKERS</div>
+          <h3>스티커 보관함 <span id="stickerCount" class="count">0</span></h3>
+        </div>
+        <span class="step-badge">02</span>
+      </div>
+
       <div id="stickers" class="sticker-grid"></div>
-      <div id="stickerEmpty" class="small">저장한 글씨 스티커가 여기에 쌓여요.</div>
-      <div class="row"><label>크기</label><input id="stickerSize" type="range" min="10" max="250" value="100"></div>
-      <div class="row"><label>불투명도</label><input id="stickerOpacity" type="range" min="10" max="100" value="100"></div>
-      <button id="stopStickerBtn" style="width:100%">스티커 찍기 종료</button>
-      <div class="small">스티커를 누른 뒤 사진 위를 클릭하면 찍혀요. 브라우저를 닫아도 저장됩니다.</div>
-    </div>
+      <div id="stickerEmpty" class="mini-empty">저장한 스티커가 여기에 쌓여요.</div>
 
-    <div class="section">
-      <h3>브러시</h3>
-      <div class="toolgrid" id="brushModes">
-        <button data-mode="erase">지우개</button>
-        <button data-mode="restore">복원</button>
-        <button data-mode="glow">글로우</button>
-        <button data-mode="sparkle">반짝이</button>
-        <button data-mode="blur">블러</button>
-        <button data-mode="none" class="active">이동/보기</button>
+      <div class="control-block compact-gap">
+        <div class="control-top"><span>크기</span></div>
+        <input id="stickerSize" type="range" min="10" max="250" value="100">
       </div>
-      <div class="row"><label>크기</label><input id="brushSize" type="range" min="4" max="120" value="36"></div>
-      <div class="row"><label>강도</label><input id="brushPower" type="range" min="5" max="100" value="55"></div>
-    </div>
-
-    <div class="section">
-      <h3>편집</h3>
-      <div class="toolgrid">
-        <button id="undoBtn">실행 취소</button>
-        <button id="resetBtn">원본 복원</button>
+      <div class="control-block compact-gap">
+        <div class="control-top"><span>불투명도</span></div>
+        <input id="stickerOpacity" type="range" min="10" max="100" value="100">
       </div>
-      <div class="hint">Ctrl/Cmd+Z 지원</div>
-    </div>
 
-    <div class="section">
-      <h3>상태</h3>
-      <div class="status" id="status">대기 중</div>
-    </div>
+      <button id="stopStickerBtn" type="button" class="btn btn-ghost btn-wide">스티커 선택 해제</button>
+    </section>
+
+    <section class="tool-card">
+      <div class="card-head">
+        <div>
+          <div class="eyebrow">BRUSH</div>
+          <h3>효과 브러시</h3>
+        </div>
+      </div>
+      <div class="tool-grid" id="brushModes">
+        <button type="button" data-mode="erase">지우개</button>
+        <button type="button" data-mode="restore">복원</button>
+        <button type="button" data-mode="glow">글로우</button>
+        <button type="button" data-mode="sparkle">반짝이</button>
+        <button type="button" data-mode="blur">블러</button>
+        <button type="button" data-mode="none" class="active">선택 없음</button>
+      </div>
+      <div class="control-block compact-gap"><div class="control-top"><span>브러시 크기</span></div><input id="brushSize" type="range" min="4" max="120" value="36"></div>
+      <div class="control-block compact-gap"><div class="control-top"><span>강도</span></div><input id="brushPower" type="range" min="5" max="100" value="55"></div>
+    </section>
+
+    <section class="tool-card mini-card">
+      <div class="inline-actions">
+        <button id="undoBtn" type="button" class="btn btn-ghost">↶ 실행 취소</button>
+        <button id="resetBtn" type="button" class="btn btn-ghost">원본 복원</button>
+      </div>
+      <div id="status" class="status">대기 중</div>
+    </section>
   </aside>
 
-  <footer class="bottom">
-    <button id="prevBtn">← 이전</button>
-    <div class="counter" id="counter">0 / 0</div>
-    <button id="nextBtn">다음 →</button>
-    <div class="grow"></div>
-    <button id="saveBtn" class="primary">PNG 저장 + 다음</button>
+  <footer class="bottombar">
+    <div class="nav-group">
+      <button id="prevBtn" type="button" class="nav-btn">←</button>
+      <div class="counter" id="counter">0 / 0</div>
+      <button id="nextBtn" type="button" class="nav-btn">→</button>
+    </div>
+    <div class="footer-tip">스티커 선택 → 사진 클릭으로 바로 붙이기</div>
+    <button id="saveBtn" type="button" class="btn btn-primary save-btn">PNG 저장 + 다음</button>
   </footer>
 </div>
 
-<script src="app.js"></script>
+<script src="app.js?v=4"></script>
 </body>
 </html>
