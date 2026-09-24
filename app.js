@@ -10,7 +10,6 @@ const stage = document.getElementById('stage');
 const drop = document.getElementById('drop');
 
 const stickerInput = document.getElementById('stickerInput');
-const openStickerBtn = document.getElementById('openStickerBtn');
 const stickerSourceCanvas = document.getElementById('stickerSourceCanvas');
 const stickerSourceCtx = stickerSourceCanvas.getContext('2d', {willReadFrequently:true});
 const stickerSourceEmpty = document.getElementById('stickerSourceEmpty');
@@ -284,7 +283,7 @@ function saveStickerLibrary(){
 }
 function renderStickers(){
   stickersEl.innerHTML='';
-  stickerCount.textContent=stickerLibrary.length;
+  if(stickerCount) stickerCount.textContent=stickerLibrary.length;
   if(selectedStickerBar){
     selectedStickerBar.textContent=activeStickerId
       ? '선택됨 · 가운데 사진을 클릭해서 붙이기'
