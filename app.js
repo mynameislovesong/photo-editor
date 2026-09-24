@@ -19,6 +19,11 @@ const stickerTol = document.getElementById('stickerTol');
 const stickersEl = document.getElementById('stickers');
 const stickerEmpty = document.getElementById('stickerEmpty');
 const stickerCount = document.getElementById('stickerCount');
+const stickerModal = document.getElementById('stickerModal');
+const openStickerModalBtn = document.getElementById('openStickerModalBtn');
+const closeStickerModalBtn = document.getElementById('closeStickerModalBtn');
+const selectedStickerBar = document.getElementById('selectedStickerBar');
+const deleteStickerBtn = document.getElementById('deleteStickerBtn');
 
 let items = [];
 let index = -1;
@@ -30,6 +35,22 @@ let stickerSourceOriginal = null;
 let pickingStickerColor = false;
 let activeStickerId = null;
 let stickerLibrary = loadStickerLibrary();
+
+function openStickerModal(){
+  if(!stickerModal) return;
+  stickerModal.classList.remove('hidden');
+  stickerModal.setAttribute('aria-hidden','false');
+}
+function closeStickerModal(){
+  if(!stickerModal) return;
+  stickerModal.classList.add('hidden');
+  stickerModal.setAttribute('aria-hidden','true');
+  pickingStickerColor=false;
+}
+if(openStickerModalBtn) openStickerModalBtn.onclick=openStickerModal;
+if(closeStickerModalBtn) closeStickerModalBtn.onclick=closeStickerModal;
+document.querySelectorAll('[data-close-modal]').forEach(el=>el.onclick=closeStickerModal);
+
 
 function setStatus(s){ statusEl.textContent = s; }
 function current(){ return items[index]; }
@@ -112,10 +133,14 @@ document.addEventListener('keydown',e=>{
   if(e.key==='ArrowLeft') loadIndex(index-1);
   if(e.key==='ArrowRight') loadIndex(index+1);
   if(e.key==='Escape'){
-    activeStickerId=null;
-    pickingStickerColor=false;
-    renderStickers();
-    setStatus('선택 취소');
+    if(stickerModal && !stickerModal.classList.contains('hidden')){
+      closeStickerModal();
+    }else{
+      activeStickerId=null;
+      pickingStickerColor=false;
+      renderStickers();
+      setStatus('선택 취소');
+    }
   }
   if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='z'){e.preventDefault();undo();}
 });
@@ -245,6 +270,7 @@ document.getElementById('saveStickerBtn').onclick=()=>{
   saveStickerLibrary();
   activeStickerId=sticker.id;
   renderStickers();
+  closeStickerModal();
   setStatus('스티커 저장 완료. 메인 사진 위를 클릭하면 붙어요');
 };
 
@@ -259,6 +285,11 @@ function saveStickerLibrary(){
 function renderStickers(){
   stickersEl.innerHTML='';
   stickerCount.textContent=stickerLibrary.length;
+  if(selectedStickerBar){
+    selectedStickerBar.textContent=activeStickerId
+      ? '선택됨 · 가운데 사진을 클릭해서 붙이기'
+      : '선택된 스티커 없음';
+  }
   stickerEmpty.style.display=stickerLibrary.length?'none':'block';
   stickerLibrary.forEach(st=>{
     const card=document.createElement('div');
@@ -276,7 +307,15 @@ function renderStickers(){
 }
 renderStickers();
 
-document.getElementById('stopStickerBtn').onclick=()=>{activeStickerId=null;renderStickers();setStatus('스티커 찍기 종료')};
+document.getElementById('stopStickerBtn').onclick=()=>{activeStickerId=null;renderStickers();setStatus('스티커 선택 해제')};
+if(deleteStickerBtn) deleteStickerBtn.onclick=()=>{
+  if(!activeStickerId){ setStatus('삭제할 스티커를 먼저 선택하세요'); return; }
+  stickerLibrary=stickerLibrary.filter(x=>x.id!==activeStickerId);
+  activeStickerId=null;
+  saveStickerLibrary();
+  renderStickers();
+  setStatus('스티커 삭제');
+};
 
 function placeSticker(id,p){
   const st=stickerLibrary.find(x=>x.id===id);if(!st||index<0)return;
