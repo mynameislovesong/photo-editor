@@ -59,9 +59,53 @@ function current(){ return items[index]; }
 openBtn.onclick = ()=> fileInput.click();
 fileInput.onchange = e => addFiles([...e.target.files]);
 
-['dragenter','dragover'].forEach(ev => stage.addEventListener(ev,e=>{e.preventDefault();drop.classList.add('on')}));
-['dragleave','drop'].forEach(ev => stage.addEventListener(ev,e=>{e.preventDefault();drop.classList.remove('on')}));
-stage.addEventListener('drop', e => addFiles([...e.dataTransfer.files].filter(f=>f.type.startsWith('image/'))));
+function getDraggedStickerId(dt){
+  if(!dt) return '';
+  return dt.getData('application/x-tiny-photo-sticker') ||
+         (dt.getData('text/plain') || '').replace(/^tiny-photo-sticker:/,'');
+}
+
+function pointInsideCanvas(clientX,clientY){
+  const r=canvas.getBoundingClientRect();
+  return clientX>=r.left && clientX<=r.right && clientY>=r.top && clientY<=r.bottom;
+}
+
+stage.addEventListener('dragenter',e=>{
+  e.preventDefault();
+  drop.classList.add('on');
+});
+stage.addEventListener('dragover',e=>{
+  e.preventDefault();
+  const stickerId=getDraggedStickerId(e.dataTransfer);
+  if(e.dataTransfer) e.dataTransfer.dropEffect=stickerId ? 'copy' : 'copy';
+  drop.classList.add('on');
+});
+stage.addEventListener('dragleave',e=>{
+  if(e.target===stage || !stage.contains(e.relatedTarget)) drop.classList.remove('on');
+});
+stage.addEventListener('drop',e=>{
+  e.preventDefault();
+  drop.classList.remove('on');
+
+  const stickerId=getDraggedStickerId(e.dataTransfer);
+  if(stickerId && stickerLibrary.some(s=>s.id===stickerId)){
+    if(index<0){
+      setStatus('먼저 메인 사진을 불러오세요');
+      return;
+    }
+    if(!pointInsideCanvas(e.clientX,e.clientY)){
+      setStatus('스티커를 사진 위에 놓아주세요');
+      return;
+    }
+    activeStickerId=stickerId;
+    renderStickers();
+    placeSticker(stickerId,canvasPos(e));
+    return;
+  }
+
+  const files=[...(e.dataTransfer?.files || [])].filter(f=>f.type.startsWith('image/'));
+  if(files.length) addFiles(files);
+});
 
 function addFiles(files){
   files.forEach(file=>{
@@ -347,19 +391,31 @@ function renderStickers(){
   if(stickerCount) stickerCount.textContent=stickerLibrary.length;
   if(selectedStickerBar){
     selectedStickerBar.textContent=activeStickerId
-      ? '선택됨 · 가운데 사진을 클릭해서 붙이기'
+      ? '선택됨 · 사진 클릭 또는 드래그해서 붙이기'
       : '선택된 스티커 없음';
   }
   stickerEmpty.style.display=stickerLibrary.length?'none':'block';
   stickerLibrary.forEach(st=>{
     const card=document.createElement('div');
     card.className='sticker-card'+(st.id===activeStickerId?' active':'');
+    card.draggable=true;
     card.onclick=()=>{
       activeStickerId=st.id;brushMode='none';
       document.querySelectorAll('#brushModes button').forEach(x=>x.classList.toggle('active',x.dataset.mode==='none'));
-      renderStickers();setStatus('스티커 선택됨');
+      renderStickers();setStatus('스티커 선택됨 · 사진을 클릭하거나 드래그해서 놓으세요');
     };
-    const img=document.createElement('img');img.src=st.dataUrl;
+    card.addEventListener('dragstart',e=>{
+      activeStickerId=st.id;
+      renderStickers();
+      if(e.dataTransfer){
+        e.dataTransfer.effectAllowed='copy';
+        e.dataTransfer.setData('application/x-tiny-photo-sticker',st.id);
+        e.dataTransfer.setData('text/plain','tiny-photo-sticker:'+st.id);
+      }
+      setStatus('스티커를 사진 위 원하는 위치에 놓으세요');
+    });
+    card.addEventListener('dragend',()=>drop.classList.remove('on'));
+    const img=document.createElement('img');img.src=st.dataUrl;img.draggable=false;
     const del=document.createElement('button');del.className='sticker-delete';del.textContent='×';
     del.onclick=e=>{e.stopPropagation();stickerLibrary=stickerLibrary.filter(x=>x.id!==st.id);if(activeStickerId===st.id)activeStickerId=null;saveStickerLibrary();renderStickers();};
     card.append(img,del);stickersEl.appendChild(card);
