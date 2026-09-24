@@ -120,7 +120,7 @@ document.addEventListener('keydown',e=>{
   if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='z'){e.preventDefault();undo();}
 });
 
-openStickerBtn.onclick=()=>stickerInput.click();
+if(openStickerBtn && openStickerBtn.tagName === 'BUTTON') openStickerBtn.onclick=()=>stickerInput.click();
 stickerInput.onchange=e=>{
   const file=e.target.files && e.target.files[0];
   if(!file) return;
