@@ -10,7 +10,7 @@
 <div class="app">
   <header>
     <div class="logo">Tiny Photo Editor</div>
-    <div class="sub">누끼 · 글씨 스티커 · 브러시 · 여러 장 연속 편집</div>
+    <div class="sub">외부 이미지 누끼 · 스티커 · 브러시 · 여러 장 연속 편집</div>
     <span class="pill">로컬 처리</span>
     <div class="grow"></div>
     <input id="fileInput" type="file" accept="image/*" multiple hidden>
@@ -42,13 +42,38 @@
       <div class="small">단색/비슷한 배경에 강해요. 먼저 배경색을 한 번 찍은 뒤 제거.</div>
     </div>
 
+
     <div class="section">
-      <h3>글씨 → 스티커</h3>
-      <button id="selectTextAreaBtn" style="width:100%">① 글씨 영역 드래그 선택</button>
-      <div class="row"><label>글씨색</label><input id="textColor" type="color" value="#ffffff"><button id="sampleTextBtn">② 색 찍기</button></div>
-      <div class="row"><label>민감도</label><input id="textTol" type="range" min="5" max="160" value="60"></div>
-      <button id="saveStickerBtn" class="primary" style="width:100%">③ 내 스티커로 저장</button>
-      <div class="small">원본은 건드리지 않고 선택한 영역에서 글씨색만 투명 PNG처럼 따서 저장해요.</div>
+      <h3>외부 이미지 → 스티커</h3>
+      <input id="stickerInput" type="file" accept="image/*" hidden>
+      <div class="toolgrid">
+        <button id="openStickerBtn">외부 이미지 불러오기</button>
+        <button id="resetStickerSourceBtn">원본 복원</button>
+      </div>
+
+      <div class="sticker-source-preview">
+        <canvas id="stickerSourceCanvas"></canvas>
+        <div id="stickerSourceEmpty" class="small">스티커로 만들 이미지를 따로 불러오세요.</div>
+      </div>
+
+      <div class="row">
+        <label>선택 색</label>
+        <input id="stickerColor" type="color" value="#ffffff">
+        <button id="pickStickerColorBtn">색 찍기</button>
+      </div>
+      <div class="row"><label>민감도</label><input id="stickerTol" type="range" min="5" max="180" value="60"></div>
+      <div class="toolgrid">
+        <button id="keepStickerColorBtn">선택 색만 남기기</button>
+        <button id="removeStickerColorBtn">선택 색 지우기</button>
+      </div>
+
+      <div class="sticker-options">
+        <label><input id="stickerOutline" type="checkbox"> 흰 테두리</label>
+        <label><input id="stickerShadow" type="checkbox"> 그림자</label>
+      </div>
+
+      <button id="saveStickerBtn" class="primary" style="width:100%;margin-top:10px">내 스티커로 저장</button>
+      <div class="small">메인 사진과 별개의 이미지를 불러와 특정 색만 남기거나 지운 뒤 스티커로 저장합니다.</div>
     </div>
 
     <div class="section">
