@@ -4,7 +4,7 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>Tiny Photo Editor</title>
-<link rel="stylesheet" href="style.css?v=7">
+<link rel="stylesheet" href="style.css?v=8">
 </head>
 <body>
 <div class="app-shell">
@@ -121,11 +121,12 @@
         <button id="closeStickerModalBtn" type="button" class="icon-btn" aria-label="닫기">✕</button>
       </div>
 
-      <input id="stickerInput" type="file" accept="image/*" hidden>
+      <input id="stickerInput" type="file" accept="image/png,image/jpeg,image/webp,image/gif,image/bmp,image/*" hidden>
       <div class="modal-actions">
-        <label for="stickerInput" class="btn btn-primary file-label">＋ 외부 이미지 불러오기</label>
+        <button id="openStickerFileBtn" type="button" class="btn btn-primary">＋ 외부 이미지 불러오기</button>
         <button id="resetStickerSourceBtn" type="button" class="btn btn-ghost">원본 복원</button>
       </div>
+      <div id="stickerImportStatus" class="import-status">PNG · JPG · WEBP 등 이미지 파일을 선택하세요.</div>
 
       <div class="modal-source-preview">
         <canvas id="stickerSourceCanvas"></canvas>
@@ -166,6 +167,6 @@
     </div>
   </div>
 
-<script src="app.js?v=7"></script>
+<script src="app.js?v=8"></script>
 </body>
 </html>
