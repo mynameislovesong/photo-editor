@@ -45,62 +45,15 @@
     <section class="tool-card">
       <div class="card-head">
         <div>
-          <div class="eyebrow">STICKER MAKER</div>
-          <h3>외부 이미지 누끼</h3>
+          <div class="eyebrow">STICKERS</div>
+          <h3>스티커</h3>
         </div>
-        <span class="step-badge">01</span>
+        <button id="openStickerModalBtn" type="button" class="btn btn-primary">＋ 스티커 추가</button>
       </div>
 
-      <input id="stickerInput" type="file" accept="image/*" hidden>
-      <div class="source-actions">
-        <label id="openStickerBtn" for="stickerInput" class="btn btn-primary file-label">＋ 외부 이미지 불러오기</label>
-        <button id="resetStickerSourceBtn" type="button" class="btn btn-ghost">원본 복원</button>
-      </div>
-
-      <div class="sticker-source-preview">
-        <canvas id="stickerSourceCanvas"></canvas>
-        <div id="stickerSourceEmpty" class="source-empty">
-          <span>이미지를 불러오면</span>
-          <strong>여기서 바로 누끼를 딸 수 있어요</strong>
-        </div>
-      </div>
-
-      <div class="control-row">
-        <div class="control-label">선택 색</div>
-        <input id="stickerColor" type="color" value="#ffffff">
-        <button id="pickStickerColorBtn" type="button" class="btn btn-compact">스포이드</button>
-      </div>
-
-      <div class="control-block">
-        <div class="control-top"><span>색상 범위</span><span class="range-hint">좁게 ↔ 넓게</span></div>
-        <input id="stickerTol" type="range" min="5" max="180" value="60">
-      </div>
-
-      <div class="segmented two">
-        <button id="keepStickerColorBtn" type="button">선택 색만 남기기</button>
-        <button id="removeStickerColorBtn" type="button">선택 색 지우기</button>
-      </div>
-
-      <div class="option-row">
-        <label class="check-chip"><input id="stickerOutline" type="checkbox"><span>흰 테두리</span></label>
-        <label class="check-chip"><input id="stickerShadow" type="checkbox"><span>그림자</span></label>
-      </div>
-
-      <button id="saveStickerBtn" type="button" class="btn btn-primary btn-wide">내 스티커로 저장</button>
-      <p class="helper">외부 이미지는 메인 사진과 별개로 처리돼요. 원하는 색을 클릭해 바로 누끼를 만들 수 있습니다.</p>
-    </section>
-
-    <section class="tool-card">
-      <div class="card-head">
-        <div>
-          <div class="eyebrow">MY STICKERS</div>
-          <h3>스티커 보관함 <span id="stickerCount" class="count">0</span></h3>
-        </div>
-        <span class="step-badge">02</span>
-      </div>
-
+      <div class="selected-sticker-bar" id="selectedStickerBar">선택된 스티커 없음</div>
       <div id="stickers" class="sticker-grid"></div>
-      <div id="stickerEmpty" class="mini-empty">저장한 스티커가 여기에 쌓여요.</div>
+      <div id="stickerEmpty" class="mini-empty">아직 저장된 스티커가 없어요.</div>
 
       <div class="control-block compact-gap">
         <div class="control-top"><span>크기</span></div>
@@ -111,7 +64,11 @@
         <input id="stickerOpacity" type="range" min="10" max="100" value="100">
       </div>
 
-      <button id="stopStickerBtn" type="button" class="btn btn-ghost btn-wide">스티커 선택 해제</button>
+      <div class="inline-actions sticker-actions">
+        <button id="stopStickerBtn" type="button" class="btn btn-ghost">선택 해제</button>
+        <button id="deleteStickerBtn" type="button" class="btn btn-ghost danger-text">선택 삭제</button>
+      </div>
+      <div class="helper">스티커를 선택한 뒤 가운데 사진을 클릭하면 바로 붙습니다.</div>
     </section>
 
     <section class="tool-card">
@@ -152,6 +109,62 @@
     <button id="saveBtn" type="button" class="btn btn-primary save-btn">PNG 저장 + 다음</button>
   </footer>
 </div>
+
+  <div id="stickerModal" class="modal hidden" aria-hidden="true">
+    <div class="modal-backdrop" data-close-modal></div>
+    <div class="modal-dialog">
+      <div class="modal-head">
+        <div>
+          <div class="eyebrow">STICKER MAKER</div>
+          <h3>스티커 추가</h3>
+        </div>
+        <button id="closeStickerModalBtn" type="button" class="icon-btn" aria-label="닫기">✕</button>
+      </div>
+
+      <input id="stickerInput" type="file" accept="image/*" hidden>
+      <div class="modal-actions">
+        <label for="stickerInput" class="btn btn-primary file-label">＋ 외부 이미지 불러오기</label>
+        <button id="resetStickerSourceBtn" type="button" class="btn btn-ghost">원본 복원</button>
+      </div>
+
+      <div class="modal-source-preview">
+        <canvas id="stickerSourceCanvas"></canvas>
+        <div id="stickerSourceEmpty" class="source-empty">
+          <strong>이미지를 먼저 불러오세요</strong>
+          <span>여기서 색을 찍고 누끼를 딸 수 있어요.</span>
+        </div>
+      </div>
+
+      <div class="modal-controls-grid">
+        <div class="control-block">
+          <div class="control-top"><span>선택 색</span></div>
+          <div class="color-control-row">
+            <input id="stickerColor" type="color" value="#ffffff">
+            <button id="pickStickerColorBtn" type="button" class="btn btn-ghost btn-compact">색 찍기</button>
+          </div>
+        </div>
+        <div class="control-block">
+          <div class="control-top"><span>민감도</span><span class="range-hint">좁게 ↔ 넓게</span></div>
+          <input id="stickerTol" type="range" min="5" max="180" value="60">
+        </div>
+      </div>
+
+      <div class="segmented two">
+        <button id="keepStickerColorBtn" type="button">선택 색만 남기기</button>
+        <button id="removeStickerColorBtn" type="button">선택 색 지우기</button>
+      </div>
+
+      <div class="option-row">
+        <label class="check-chip"><input id="stickerOutline" type="checkbox" checked><span>흰 테두리</span></label>
+        <label class="check-chip"><input id="stickerShadow" type="checkbox"><span>그림자</span></label>
+      </div>
+
+      <div class="modal-footer">
+        <div class="helper">외부 이미지는 메인 사진과 별개로 처리됩니다.</div>
+        <button id="saveStickerBtn" type="button" class="btn btn-primary">내 스티커로 저장</button>
+      </div>
+    </div>
+  </div>
 
 <script src="app.js?v=4"></script>
 </body>
