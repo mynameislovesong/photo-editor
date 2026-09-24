@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Tiny Photo Editor</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="app">
+  <header>
+    <div class="logo">Tiny Photo Editor</div>
+    <div class="sub">누끼 · 글씨 추출 · 브러시 · 여러 장 연속 편집</div>
+    <span class="pill">로컬 처리</span>
+    <div class="grow"></div>
+    <input id="fileInput" type="file" accept="image/*" multiple hidden>
+    <button id="openBtn" class="primary">사진 불러오기</button>
+  </header>
+
+  <aside class="left">
+    <div id="thumbs"></div>
+    <div class="small">사진 여러 장을 한 번에 넣을 수 있어요. 썸네일을 누르거나 ← → 키로 이동.</div>
+  </aside>
+
+  <main class="stage" id="stage">
+    <div class="canvas-wrap"><canvas id="canvas"></canvas></div>
+    <div class="empty" id="empty">사진을 불러오거나<br>여기에 드래그해 놓기</div>
+    <div id="drop"></div>
+  </main>
+
+  <aside class="right">
+    <div class="section">
+      <h3>자동 누끼</h3>
+      <div class="toolgrid">
+        <button id="pickBgBtn">배경색 찍기</button>
+        <button id="removeBgBtn">배경 제거</button>
+      </div>
+      <div class="row"><label>민감도</label><input id="bgTol" type="range" min="5" max="120" value="38"></div>
+      <div class="small">단색/비슷한 배경에 강해요. 먼저 배경색을 한 번 찍은 뒤 제거.</div>
+    </div>
+
+    <div class="section">
+      <h3>글씨 누끼</h3>
+      <div class="row"><label>글씨색</label><input id="textColor" type="color" value="#ffffff"><button id="sampleTextBtn">찍기</button></div>
+      <div class="row"><label>민감도</label><input id="textTol" type="range" min="5" max="160" value="60"></div>
+      <button id="extractTextBtn" style="width:100%">선택 색만 남기기</button>
+      <div class="small">자막/로고처럼 색 대비가 분명한 글씨에 적합.</div>
+    </div>
+
+    <div class="section">
+      <h3>브러시</h3>
+      <div class="toolgrid" id="brushModes">
+        <button data-mode="erase">지우개</button>
+        <button data-mode="restore">복원</button>
+        <button data-mode="glow">글로우</button>
+        <button data-mode="sparkle">반짝이</button>
+        <button data-mode="blur">블러</button>
+        <button data-mode="none" class="active">이동/보기</button>
+      </div>
+      <div class="row"><label>크기</label><input id="brushSize" type="range" min="4" max="120" value="36"></div>
+      <div class="row"><label>강도</label><input id="brushPower" type="range" min="5" max="100" value="55"></div>
+    </div>
+
+    <div class="section">
+      <h3>편집</h3>
+      <div class="toolgrid">
+        <button id="undoBtn">실행 취소</button>
+        <button id="resetBtn">원본 복원</button>
+      </div>
+      <div class="hint">Ctrl/Cmd+Z 지원</div>
+    </div>
+
+    <div class="section">
+      <h3>상태</h3>
+      <div class="status" id="status">대기 중</div>
+    </div>
+  </aside>
+
+  <footer class="bottom">
+    <button id="prevBtn">← 이전</button>
+    <div class="counter" id="counter">0 / 0</div>
+    <button id="nextBtn">다음 →</button>
+    <div class="grow"></div>
+    <button id="saveBtn" class="primary">PNG 저장 + 다음</button>
+  </footer>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>
